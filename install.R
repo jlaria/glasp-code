@@ -18,7 +18,11 @@ c("hardhat",
 "reshape2",
 "rsample",
 "tune",
-"yardstick"
+"yardstick",
+"devtools"
 )
 
 install.packages(packages)
+devtools::install_github("jlaria/glasp")
+
+cat("Installation Finished")
