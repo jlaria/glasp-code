@@ -7,19 +7,19 @@ c("hardhat",
 "Rcpp",
 "RcppArmadillo",
 "parsnip",
-"tibble",
-"MASS",
+#"tibble",
+#"MASS",
 "fda.usc",
 "clues",
 "recipes",
 "testthat",
-"dplyr",
-"ggplot2",
+#"dplyr",
+#"ggplot2",
 "reshape2",
 "rsample",
 "tune",
-"yardstick",
-"devtools"
+#"devtools",
+"yardstick"
 )
 
 install.packages(packages)

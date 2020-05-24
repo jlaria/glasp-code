@@ -1,12 +1,14 @@
-FROM debian:stretch
+FROM debian
 
 WORKDIR /root/
 
-# Install R from cran backports
-RUN apt-get update && apt-get install gnupg2 wget -y
-RUN apt-key adv --keyserver keys.gnupg.net --recv-key 'E19F5F87128899B192B1A2C2AD5F960A256A04AF'
-RUN echo -e "\ndeb http://cloud.r-project.org/bin/linux/debian stretch-cran35/\n" >> /etc/apt/sources.list
-RUN apt-get update && apt-get install r-base -y
+# Install R
+#RUN apt-get update && apt-get install gnupg2 wget libcurl4-openssl-dev libcurl4-gnutls-dev libxml2-dev libssl-dev libgit2-dev -y
+#RUN apt-key adv --keyserver keys.gnupg.net --recv-key 'E19F5F87128899B192B1A2C2AD5F960A256A04AF'
+# ADD jranke.asc .
+# RUN apt-key add jranke.asc
+# RUN echo "deb http://cloud.r-project.org/bin/linux/debian stretch-cran35/" | tee -a /etc/apt/sources.list
+RUN apt-get update && apt-get install r-cran-dplyr r-cran-rcpparmadillo r-cran-mass r-cran-devtools r-cran-devtools -y
 
 # Install R dependencies and glasp
 RUN wget https://raw.githubusercontent.com/jlaria/glasp-code/master/install.R
