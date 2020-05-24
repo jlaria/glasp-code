@@ -2,17 +2,18 @@
 library(sparklyr)
 library(dplyr)
 
-conf <- spark_config()
-conf$spark.executor.memory <- "2GB"
-conf$spark.memory.fraction <- 0.9
-conf$spark.yarn.maxAppAttempts <- 20
-conf$sparklyr.apply.schema.infer <- 1
+# conf <- spark_config()
+# conf$spark.executor.memory <- "2GB"
+# conf$spark.memory.fraction <- 0.9
+# conf$spark.yarn.maxAppAttempts <- 20
+# conf$sparklyr.apply.schema.infer <- 1
 
-sc <- spark_connect(master="spark://master:7077", 
-                    version = "2.4.4",
-                    config = conf,
-                    spark_home = "~/spark-2.4.4-bin-hadoop2.7/")
+# sc <- spark_connect(master="spark://master:7077", 
+#                     version = "2.4.4",
+#                     config = conf,
+#                     spark_home = "~/spark-2.4.4-bin-hadoop2.7/")
 
+sc  <- spark_connect("local[*]")
 
 # Functions ---------------------------------------------------------------
 
@@ -53,7 +54,7 @@ parallel_function <- function(iter){
   #                             control = ctrl, iter = 1000)
 
   
-  best_config <- tune::show_best(rec_form, n = 50)
+  best_config <- tune::show_best(rec_form, n = 50, metric = "roc_auc")
   
   model <- glasp::linear_classification(
     event ~ .,

@@ -1,27 +1,29 @@
 # sc6
 
-
 # Connect cluster --------------------------------------------------------
 library(sparklyr)
 library(dplyr)
 
-conf <- spark_config()
-conf$spark.executor.memory <- "2GB"
-conf$spark.memory.fraction <- 0.9
-conf$spark.yarn.maxAppAttempts <- 20
-conf$sparklyr.apply.schema.infer <- 1
+# conf <- spark_config()
+# conf$spark.executor.memory <- "2GB"
+# conf$spark.memory.fraction <- 0.9
+# conf$spark.yarn.maxAppAttempts <- 20
+# conf$sparklyr.apply.schema.infer <- 1
 
-sc <- spark_connect(master="spark://master:7077", 
-                    version = "2.4.4",
-                    config = conf,
-                    spark_home = "~/spark-2.4.4-bin-hadoop2.7/")
+# sc <- spark_connect(master="spark://master:7077", 
+#                     version = "2.4.4",
+#                     config = conf,
+#                     spark_home = "~/spark-2.4.4-bin-hadoop2.7/")
 
+sc <- spark_connect(master = "local[*]")
 
 
 # Functions ---------------------------------------------------------------
 
 
 parallel_function <- function(iter){
+  library(yardstick)
+
   rho <- as.data.frame(iter)$rho[1]
   iter <- as.data.frame(iter)$iter[1]
   
@@ -79,11 +81,11 @@ parallel_function <- function(iter){
   valid_data <- data.frame(y =  yval,  xval)
   test_data <- data.frame(y =  yte,  xte)
   
-  glasp_mod <- glaspR::clust_reg(
-    penalty_L1 = tune::tune("penalty_L1"),
-    penalty_L2 = tune::tune("penalty_L2"),
-    penalty_SVD = tune::tune("penalty_SVD"),
-    num_comp = 3
+  glasp_mod <- glasp::glasp_model(
+    l1 = tune::tune(),
+    l2 = tune::tune(),
+    frob = tune::tune(),
+    num_comp = 4
   )
   glasp_mod <- parsnip::set_mode(glasp_mod, "regression")
   glasp_mod <- parsnip::set_engine(glasp_mod, "glasp")
@@ -91,7 +93,7 @@ parallel_function <- function(iter){
   data_rs <- rsample::vfold_cv(rbind(train_data, valid_data), v = 2)
   data_rs$splits$`1`$in_id <- 1:200
   data_rs$splits$`2`$in_id <- 201:400
-  metric_vals <- yardstick::metric_set(yardstick::rmse)
+  metric_vals <- yardstick::metric_set(rmse)
   ctrl <- tune::control_grid(verbose = T)
   
   rec_form <-
@@ -104,16 +106,16 @@ parallel_function <- function(iter){
       grid = 1000
     )
   
-  best_config <- tune::show_best(rec_form[1,], maximize = F)
-  model <- glaspR::glasp_model(
+  best_config <- tune::show_best(rec_form[1,], metric = "rmse")
+  model <- glasp::linear_regression(
     y ~ . ,
     train_data,
-    penalty_L1 = best_config$penalty_L1[1],
-    penalty_L2 = best_config$penalty_L2[1],
-    penalty_SVD = best_config$penalty_SVD[1],
+    l1 = best_config$l1[1],
+    l2 = best_config$l2[1],
+    frob = best_config$frob[1],
     num_comp = 4
   )
-  betas_est <- model$coefs[-1]
+  betas_est <- model$beta
   
   store.rmseste <- sqrt(sum(( xte%*%beta- xte%*%betas_est)^2))
   store.RIs <- clues::adjustedRand(trueCs, model$clusters, randMethod="Rand")

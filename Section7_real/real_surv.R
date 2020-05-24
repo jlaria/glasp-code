@@ -34,7 +34,7 @@ model <- linear_classification(
 model$clusters
 model$beta
 
-save.image("dlbcl_result_seed0.RData")
+save.image("Section7_real/dlbcl_result_seed0.RData")
 
 
 cl <- model$clusters[model$beta != 0]
