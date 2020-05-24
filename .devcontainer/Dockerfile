@@ -1,4 +1,4 @@
-FROM debian
+FROM r-base:3.6.3
 
 WORKDIR /root/
 
@@ -8,7 +8,8 @@ WORKDIR /root/
 # ADD jranke.asc .
 # RUN apt-key add jranke.asc
 # RUN echo "deb http://cloud.r-project.org/bin/linux/debian stretch-cran35/" | tee -a /etc/apt/sources.list
-RUN apt-get update && apt-get install r-cran-dplyr r-cran-rcpparmadillo r-cran-mass r-cran-devtools r-cran-devtools -y
+# RUN apt-get update && apt-get install r-cran-dplyr r-cran-rcpparmadillo r-cran-mass r-cran-devtools r-cran-devtools -y
+RUN apt-get update && apt-get install wget git -y 
 
 # Install R dependencies and glasp
 RUN wget https://raw.githubusercontent.com/jlaria/glasp-code/master/install.R
