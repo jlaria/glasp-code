@@ -102,7 +102,7 @@ gg4 = ggplot(grid) +
   geom_hline(aes(yintercept=0), linetype = "dashed", size = 0.1)+
   geom_vline(aes(xintercept=0), linetype = "dashed", size = 0.1)
 
-ggarrange(gg1, gg2, gg3, gg4, ncol = 4, nrow = 1,
+ggarrange(gg1, gg2, gg3, gg4, ncol = 2, nrow = 2,
           labels = c("a)", "b)", "c)", "d)"))
 
 
