@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
     rstudio:
-        build:
-            context: rstudio/
-            dockerfile: Dockerfile
+        image: jlaria/glasp:0.0.1
         ports:
             - "8787:8787"
         tty: true
